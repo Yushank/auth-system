@@ -6,7 +6,7 @@ const app = new Hono()
 
 app.use(cors());
 
-app.route('api/v1/users', userRouter);
+app.route('/api/v1/user', userRouter);
 
 app.get('/', (c) => {
   return c.text('Hello Hono!')
