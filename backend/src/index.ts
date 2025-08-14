@@ -2,7 +2,12 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { userRouter } from './router/userRouter';
 
-const app = new Hono()
+const app = new Hono<{
+  Bindings: {
+    DATABASE_URL: string
+    // Add other environment variables you use
+  }
+}>()
 
 app.use(cors());
 
@@ -13,3 +18,4 @@ app.get('/', (c) => {
 })
 
 export default app
+export type AppType = typeof app
