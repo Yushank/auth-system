@@ -99,7 +99,7 @@ export async function signin(c: Context){
         }
 
         const userId = isUserExist?.id;
-        const accessToken = jwt.sign({userId}, `${c.env.ACCESS_SECRET}`, {expiresIn: "15m"});
+        const accessToken = jwt.sign({userId}, `${c.env.ACCESS_SECRET}`, {expiresIn: "15s"});
         const refreshToken = jwt.sign({userId}, `${c.env.REFRESH_SECRET}`, {expiresIn: "7d"});
 
         return c.json({

@@ -1,8 +1,10 @@
 import React, { createContext, type ReactNode, useContext, useState } from "react"
+import { useDispatch } from "react-redux";
+import { clearAccessToken, setAccessToken } from "../features/accessToken/accessTokenSlice";
 
 type AuthContextType = {
-    accessToken: string | null;
-    refreshToken: string | null;
+    accessTokenLocal: string | null;
+    refreshTokenLocal: string | null;
     login: (access: string, refresh: string) => void;
     logout: () => void;
 }
@@ -10,23 +12,29 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({children}: {children: ReactNode}) => {
-    const [accessToken, setAccessToken] = useState<string | null>(null);
-    const [refreshToken, setRefreshToken] = useState<string | null>(null);
+    const [accessTokenLocal, setAccessTokenLocal] = useState<string | null>(null);
+    const [refreshTokenLocal, setRefreshTokenLocal] = useState<string | null>(null);
+
+    const dispatch = useDispatch()
 
     const login = (access: string, refresh: string) => {
-        setAccessToken(access);
-        setRefreshToken(refresh);
+        setAccessTokenLocal(access);
+        setRefreshTokenLocal(refresh);
+
+        dispatch(setAccessToken(access)); //redux
         localStorage.setItem("refreshToken", refresh);
     }
 
     const logout = () => {
-        setAccessToken(null);
-        setRefreshToken(null);
+        setAccessTokenLocal(null);
+        setRefreshTokenLocal(null);
+
+        dispatch(clearAccessToken()); //redux
         localStorage.removeItem("refreshToken");
     }
 
     return (
-        <AuthContext.Provider value={{accessToken, refreshToken, login, logout}}>
+        <AuthContext.Provider value={{accessTokenLocal, refreshTokenLocal, login, logout}}>
             {children}
         </AuthContext.Provider>
     );
