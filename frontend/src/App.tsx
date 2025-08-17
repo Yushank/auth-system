@@ -13,7 +13,6 @@ function App() {
 
   return (
     <>
-      <Provider store={store}>
         <AuthProvider>
           <BrowserRouter>
             <Routes>
@@ -27,7 +26,6 @@ function App() {
             </Routes>
           </BrowserRouter>
         </AuthProvider>
-      </Provider>
     </>
   )
 }

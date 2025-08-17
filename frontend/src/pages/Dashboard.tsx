@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"
 import { useState } from "react";
+import { Profile } from "../components/Profile";
 
 
 
@@ -28,6 +29,9 @@ export const Dashboard = () => {
                     className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded">
                     {isLoggingOut ? "LOGGING OUT..." : "LOGOUT"}
                 </button>
+            </div>
+            <div>
+                <Profile />
             </div>
         </div>
     )

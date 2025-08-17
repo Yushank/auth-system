@@ -58,12 +58,12 @@ export async function signup(c: Context) {
         });
     }
     catch (error) {
-        return c.json({error: `Internal server error: ${error}` }, 500);
+        return c.json({ error: `Internal server error: ${error}` }, 500);
     }
 }
 
 
-export async function signin(c: Context){
+export async function signin(c: Context) {
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
@@ -74,11 +74,11 @@ export async function signin(c: Context){
     } = await c.req.json();
 
 
-    try{
+    try {
         const parsePayload = signinSchema.safeParse(body);
 
-        if(!parsePayload.success){
-            return c.json({error: "Invalid inputs"}, 400);
+        if (!parsePayload.success) {
+            return c.json({ error: "Invalid inputs" }, 400);
         }
 
         const isUserExist = await prisma.user.findUnique({
@@ -87,20 +87,20 @@ export async function signin(c: Context){
             }
         });
 
-        if(isUserExist == null){
-            return c.json({error: "User doesn't exist"}, 402)
+        if (isUserExist == null) {
+            return c.json({ error: "User doesn't exist" }, 402)
         }
 
         //compare password
         const isPasswordCorrect = await bcrypt.compare(body.password, isUserExist.password);
 
-        if(!isPasswordCorrect){
-            return c.json({error: "Invalid credentials"}, 401);
+        if (!isPasswordCorrect) {
+            return c.json({ error: "Invalid credentials" }, 401);
         }
 
         const userId = isUserExist?.id;
-        const accessToken = jwt.sign({userId}, `${c.env.ACCESS_SECRET}`, {expiresIn: "15s"});
-        const refreshToken = jwt.sign({userId}, `${c.env.REFRESH_SECRET}`, {expiresIn: "7d"});
+        const accessToken = jwt.sign({ userId }, `${c.env.ACCESS_SECRET}`, { expiresIn: "30s" });
+        const refreshToken = jwt.sign({ userId }, `${c.env.REFRESH_SECRET}`, { expiresIn: "7d" });
 
         return c.json({
             msg: "Signin successfull",
@@ -108,7 +108,32 @@ export async function signin(c: Context){
             refreshToken: refreshToken,
         });
     }
+    catch (error) {
+        return c.json({ error: `Internal server error: ${error}` }, 500)
+    }
+}
+
+export async function profile(c: Context) {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+
+    const userId = c.get('userId');
+
+    try {
+        const profile = await prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+
+
+        return c.json({
+            firstName: profile?.firstName,
+            lastName: profile?.lastName
+        });
+    }
     catch(error){
-        return c.json({error: `Internal server error: ${error}`}, 500)
+        return c.json({ error: `Unable to fetch data: ${error}`}, 500)
     }
 }
