@@ -46,11 +46,20 @@ export const Auth = ({ type }: { type: "signup" | "signin" }) => {
                 password: postInputs.password
             });
 
-            login(response.data.accessToken, response.data.refreshToken);
-            navigate('/dashboard')
+            if (response.data.role === "admin") {
+                login(response.data.accessToken, response.data.refreshToken);
+                navigate('/admin')
+            }
+            else {
+                login(response.data.accessToken, response.data.refreshToken);
+                navigate('/dashboard')
+            }
         }
-        catch (error) {
+        catch (error: any) {
             console.error(error);
+            if(error.status === 402){
+                alert("402: User not found")
+            }
         }
     };
 

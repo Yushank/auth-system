@@ -91,6 +91,15 @@ export async function signin(c: Context) {
             return c.json({ error: "User doesn't exist" }, 402)
         }
 
+        let role = "default";
+
+        if (isUserExist.role === "admin"){
+            role = "admin"
+        }
+        else {
+            role = "user"
+        }
+
         //compare password
         const isPasswordCorrect = await bcrypt.compare(body.password, isUserExist.password);
 
@@ -99,13 +108,15 @@ export async function signin(c: Context) {
         }
 
         const userId = isUserExist?.id;
-        const accessToken = jwt.sign({ userId }, `${c.env.ACCESS_SECRET}`, { expiresIn: "30s" });
-        const refreshToken = jwt.sign({ userId }, `${c.env.REFRESH_SECRET}`, { expiresIn: "7d" });
+        const userPayload = {userId, role};
+        const accessToken = jwt.sign(userPayload, `${c.env.ACCESS_SECRET}`, { expiresIn: "30s" });
+        const refreshToken = jwt.sign(userPayload, `${c.env.REFRESH_SECRET}`, { expiresIn: "7d" });
 
         return c.json({
             msg: "Signin successfull",
             accessToken: accessToken,
             refreshToken: refreshToken,
+            role: role,
         });
     }
     catch (error) {

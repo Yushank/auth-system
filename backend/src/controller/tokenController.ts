@@ -10,9 +10,9 @@ export async function tokenRefresh(c: Context) {
     }
 
     try {
-        const decoded = jwt.verify(refreshToken, c.env.REFRESH_SECRET) as { userId: string };
+        const decoded = jwt.verify(refreshToken, c.env.REFRESH_SECRET) as { userId: string, role: string };
 
-        const newAccessToken = jwt.sign({ userId: decoded.userId }, c.env.ACCESS_SECRET, { expiresIn: "30s" });
+        const newAccessToken = jwt.sign({ userId: decoded.userId, role: decoded.role }, c.env.ACCESS_SECRET, { expiresIn: "30s" });
 
         return c.json({ accessToken: newAccessToken });
     }
